@@ -94,7 +94,7 @@ func test_json_generation():
 # Text file copy function removed - JSON only
 
 # Write comprehensive game stats as JSON
-func write_game_stats_json(player_count: int, boss_name: String, attempt_number: int, table_node):
+func write_game_stats_json(player_count: int, boss_name: String, attempt_number: int, table_node, playerdatabase_node):
 	print("Writing comprehensive game stats JSON...")
 	
 	# Get tiertracker reference for game series info
@@ -188,6 +188,12 @@ func write_game_stats_json(player_count: int, boss_name: String, attempt_number:
 							current_passive = player_data["passive"]
 							break
 	
+	# Get pity counter information
+	var pity_loss_current = 0
+	var pity_loss_max = 5
+	if playerdatabase_node and playerdatabase_node.playerdatabase.has("metadata"):
+		pity_loss_current = playerdatabase_node.playerdatabase["metadata"].get("pity_loss", 5)
+	
 	# Create comprehensive JSON data
 	var json_data = {
 		"timestamp": Time.get_datetime_string_from_system(),
@@ -201,7 +207,14 @@ func write_game_stats_json(player_count: int, boss_name: String, attempt_number:
 			"season": season,
 			"cycle": cycle,
 			"stage": stage,
-			"tier": tier
+			"tier": tier,
+			"pity_system": {
+				"current_pity_losses": pity_loss_current,
+				"max_pity_losses": pity_loss_max,
+				"losses_until_ng_reduction": max(0, pity_loss_current),
+				"ng_reduction_active": pity_loss_current == 0,
+				"description": "NG+ level reduces by 1 after 5 consecutive game overs"
+			}
 		},
 		
 		"wave_info": {
@@ -674,7 +687,12 @@ func write_ascend_stats_json(player_name: String, playerdatabase_node, table_nod
 func update_all_game_stats(player_count: int, boss_name: String, attempt_number: int, table_node):
 	print("Updating all game stats...")
 	
+	# Get playerdatabase node from table_node if possible
+	var playerdatabase_node = null
+	if table_node and table_node.has_method("get"):
+		playerdatabase_node = table_node.get("playerdatabase")
+	
 	# Write comprehensive JSON only
-	write_game_stats_json(player_count, boss_name, attempt_number, table_node)
+	write_game_stats_json(player_count, boss_name, attempt_number, table_node, playerdatabase_node)
 	
 	print("All game stats updated successfully")
