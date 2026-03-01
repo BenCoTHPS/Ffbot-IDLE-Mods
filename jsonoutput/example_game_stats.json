@@ -2,75 +2,84 @@
 	"actor_info": {
 		"actor_slots": [
 			1,
-			100
+			100,
+			101,
+			102
 		],
 		"has_boss": true,
-		"total_actors": 2
+		"total_actors": 4
 	},
 	"battle_info": {
 		"battle_ongoing": false,
-		"battle_time": "00:02:38",
-		"boss_hp_current": 2480461,
+		"battle_time": "00:02:29",
+		"boss_hp_current": 117,
 		"boss_hp_max": 0,
 		"boss_hp_percent": 0,
-		"enemy_count": 2,
+		"enemy_count": 4,
 		"player_count": 1
 	},
 	"game_info": {
-		"current_boss": "Klikk",
-		"cycle": 34,
-		"ng_plus_attempt": 35,
-		"ng_plus_internal": 34,
+		"current_boss": "Air Buster",
+		"cycle": 1,
+		"ng_plus_attempt": 2,
+		"ng_plus_internal": 1,
+		"pity_system": {
+			"current_pity_losses": 5,
+			"description": "NG+ level reduces by 1 after 5 consecutive game overs",
+			"losses_until_ng_reduction": 5,
+			"max_pity_losses": 5,
+			"ng_reduction_active": false
+		},
 		"players_in_run": 1,
-		"season": 5,
+		"season": 0,
 		"stage": 3,
-		"tier": 20315
+		"tier": 49
 	},
 	"player_details": [
 		{
 			"atb": 0,
-			"card": "Cactuar",
-			"esper": "Cactuar",
-			"hp_current": 587612,
+			"card": "Djinn",
+			"esper": "none",
+			"hp_current": 80,
 			"hp_max": 0,
 			"hp_percent": 0,
 			"job": "",
 			"lb_charge": 0,
-			"name": "Bakurraa",
+			"name": "Enzemo",
 			"passive": "",
 			"slot": 1,
 			"status_effects": [],
-			"unit": "Galuf"
+			"unit": "Jill"
 		}
 	],
 	"progression": {
 		"completion_rate": 6,
 		"is_final_wave": false,
-		"waves_until_complete": 43
+		"waves_until_complete": 44
 	},
 	"run_info": {
 		"available_characters": null,
-		"current_passive": "Battle Cry",
+		"current_passive": null,
 		"hire_system": {
-			"current_hire": "Margy",
+			"current_hire": "Raijin",
 			"hire_available": true,
 			"hire_price": 0
 		},
-		"passive_system_active": true
+		"passive_system_active": false
 	},
 	"system_info": {
 		"artifact_system": false,
 		"card_system": false,
 		"esper_system": false,
 		"job_system": false,
-		"passive_system": true
+		"passive_system": false
 	},
-	"timestamp": "2026-02-27T16:28:03",
-	"unix_timestamp": 1772209683.748,
+	"timestamp": "2026-03-01T18:20:13",
+	"unix_timestamp": 1772389213.004,
 	"wave_info": {
 		"current_wave": 3,
-		"max_waves": 46,
+		"max_waves": 47,
 		"wave_progress_percent": 6,
-		"waves_remaining": 43
+		"waves_remaining": 44
 	}
-} 
+}
