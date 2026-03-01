@@ -43,9 +43,3 @@ func update_game_stats():
 		print("DEBUG: Successfully called update_all_game_stats with JSON data")
 	else:
 		print("DEBUG: game_stats_writer not found!")
-
-# Add to table.gd
-
-func update_ascend_output(p_name: String, a: int, m: int, s: int, h: int, asc: float):
-	if game_stats_writer:
-		game_stats_writer.write_ascend_data_json(p_name, a, m, s, h, asc)
