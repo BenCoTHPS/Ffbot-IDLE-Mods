@@ -9,8 +9,8 @@ var stats_to_save = {
     "hp": newhp
 }
 
-# Trigger the JSON update through the table
-if table.has_method("update_ascend_json"):
-    table.update_ascend_json(name, stats_to_save, ascension)
-
-# ... existing code for UI text and tweens ...
+# put this after 
+# var stat_1 = $"../infobox/stats_new"
+#	stat_1.text = "Progress will reset, keep:" + "\n Atk: " + str(newatk) + " Spi: " + str(newspi) + "\n Mag: " + str(newmag) + " HP: " + str(newhp) + "\n Party EXP up: " + str(ascension*2)+"%" + "\n Type !yes to proceed"
+#
+table.update_ascend_output(name, newatk, newmag, newspi, newhp, ascension)
