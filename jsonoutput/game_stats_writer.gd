@@ -534,6 +534,30 @@ func copy_player_stats_to_game_dir(json_string: String):
 	else:
 		print("Failed to copy player_stats.json to game directory")
 
+
+func write_ascend_data_json(player_name: String, stats: Dictionary, ascension_exp: float):
+	var ascend_data = {
+		"timestamp": Time.get_datetime_string_from_system(),
+		"player_name": player_name,
+		"prospective_stats": stats,
+		"party_exp_boost": str(ascension_exp * 2) + "%",
+		"status": "Awaiting confirmation (!yes)"
+	}
+	
+	var json_string = JSON.stringify(ascend_data, "\t")
+	
+	# Save to user:// for persistence
+	var file = FileAccess.open("user://ascend_data.json", FileAccess.WRITE)
+	if file:
+		file.store_string(json_string)
+		file.close()
+		
+		# Copy to game directory for external tools/overlays
+		var dest_file = FileAccess.open("ascend_data.json", FileAccess.WRITE)
+		if dest_file:
+			dest_file.store_string(json_string)
+			dest_file.close()
+
 # Update all game stats with comprehensive information (JSON only)
 func update_all_game_stats(player_count: int, boss_name: String, attempt_number: int, table_node):
 	print("Updating all game stats...")
