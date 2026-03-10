@@ -72,6 +72,8 @@ Live examples of how this data can be visualized can be found here: [https://enz
 * `index.html`: Central directory for the overlays.
 * `game-stats-browser.html`: Live battle and session overlay.
 * `player-stats-browser.html`: Persistent character attribute overlay.
+* `session-hud-browser.html`: Browser source for obs. Requires Json mod and csv database to resolve unlocks and correct encounter names (editable) 
 * `player_stats.json`: Sample output of player data.
 * `game_stats.json`: Sample output of session data.
 * `gameover.wav`: Required file for  audio alerts.
+* `FFBot.csv`: Database to power the session hud browser 
