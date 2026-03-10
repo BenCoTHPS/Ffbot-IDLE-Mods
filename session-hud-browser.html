@@ -3,16 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>OBS - Session HUD</title>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>OBS - Session HUD</title>
     <style>
         :root {
-            --bg-color: #0f172a; /* Fallback Slate */
+            --bg-color: #000000; 
             --bg-alpha: 0.9;
-            --accent-color: #38bdf8; /* Fallback Sky Blue */
+            --accent-color: #e9ac2e; 
             --text-main: #f1f5f9;
         }
 
@@ -28,7 +23,6 @@
         }
 
         .hud-wrapper {
-            /* Combine background color with an opacity */
             background: color-mix(in srgb, var(--bg-color) 90%, transparent);
             backdrop-filter: blur(8px);
             border-radius: 6px;
@@ -39,18 +33,11 @@
 
         .main-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             margin-bottom: 12px;
             border-bottom: 2px solid color-mix(in srgb, var(--accent-color) 20%, transparent);
             padding-bottom: 6px;
-        }
-
-        .time-badge {
-            color: var(--accent-color);
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            font-size: 1rem;
         }
 
         .target-name {
@@ -62,7 +49,8 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 200px;
+            max-width: 280px;
+            text-align: center;
         }
 
         .row {
@@ -119,7 +107,6 @@
 <div class="hud-wrapper">
     <div class="main-header">
         <span class="target-name" id="target">WAITING...</span>
-        <span class="time-badge" id="time">00:00</span>
     </div>
 
     <div>
@@ -133,6 +120,11 @@
     </div>
 
     <div class="row" style="margin-top: 12px;">
+        <span class="label">Attempts Remaining</span>
+        <span class="val" id="attempts">-</span>
+    </div>
+
+    <div class="row">
         <span class="label">NG+ Level</span>
         <span class="val" id="ng-cycle">-</span>
     </div>
@@ -145,6 +137,11 @@
     <div class="row">
         <span class="label">!hire</span>
         <span class="val" id="hire">-</span>
+    </div>
+    
+    <div class="row">
+        <span class="label">NG+ Unlock</span>
+        <span class="val" id="ng-unlock">-</span>
     </div>
 
     <div class="footer-stats">
@@ -160,13 +157,51 @@
 </div>
 
 <script>
+    // Configuration
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('bg')) document.documentElement.style.setProperty('--bg-color', '#' + urlParams.get('bg'));
     if(urlParams.has('accent')) document.documentElement.style.setProperty('--accent-color', '#' + urlParams.get('accent'));
 
+    let nameMap = {};
+    let ngUnlockMap = {};
+
+    // 1. Function to fetch and parse the CSV
+    async function loadNameMap() {
+        try {
+            const response = await fetch('FFBot.csv');
+            const csvText = await response.text();
+            
+            const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== "");
+            const headers = lines[0].split(',');
+            
+            const internalIdx = headers.indexOf('internal name');
+            const displayIdx = headers.indexOf('Display name');
+            const unlockIdx = headers.indexOf('NG Unlocks');
+            const ngLevelIdx = headers.indexOf('NG level');
+
+            lines.slice(1).forEach(line => {
+                const parts = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                
+                // Map names
+                if (internalIdx !== -1 && displayIdx !== -1 && parts[internalIdx]) {
+                    nameMap[parts[internalIdx].trim()] = parts[displayIdx].trim();
+                }
+
+                // Map NG Unlocks
+                if (ngLevelIdx !== -1 && unlockIdx !== -1 && parts[ngLevelIdx]) {
+                    const level = parts[ngLevelIdx].trim();
+                    const unlock = parts[unlockIdx] ? parts[unlockIdx].trim() : "";
+                    if(level) ngUnlockMap[level] = unlock;
+                }
+            });
+            console.log("Data loaded successfully.");
+        } catch (e) {
+            console.error("Error loading CSV:", e);
+        }
+    }
+
     function updateHUD() {
         const xhr = new XMLHttpRequest();
-        // The ?t= timestamp prevents OBS from showing a cached/old version of the JSON
         xhr.open("GET", "game_stats.json?t=" + Date.now(), true);
         
         xhr.onload = function () {
@@ -174,9 +209,12 @@
                 try {
                     const data = JSON.parse(xhr.responseText);
 
-                    // Update UI
-                    document.getElementById('target').innerText = data.game_info.current_boss.toUpperCase();
-                    document.getElementById('time').innerText = data.battle_info.battle_time;
+                    // Boss Name Replacement
+                    const rawBossName = data.game_info.current_boss;
+                    const displayName = nameMap[rawBossName] || rawBossName; 
+                    document.getElementById('target').innerText = displayName.toUpperCase();
+
+                    // Standard UI Updates
                     document.getElementById('wave-text').innerText = `${data.wave_info.current_wave} / ${data.wave_info.max_waves}`;
                     document.getElementById('wave-bar').style.width = data.wave_info.wave_progress_percent + '%';
                     document.getElementById('passive').innerText = data.run_info.current_passive || "None";
@@ -184,27 +222,36 @@
                     document.getElementById('players').innerText = data.game_info.players_in_run;
                     document.getElementById('comp').innerText = data.progression.completion_rate + '%';
                     
-                    document.getElementById('ng-cycle').innerText = "Level " + (data.game_info.cycle ?? "-");
-                    document.getElementById('ng-attempt').innerText = "#" + (data.game_info.ng_plus_attempt ?? "-");
+                    const pSystem = data.game_info.pity_system;
+                    document.getElementById('attempts').innerText = pSystem ? pSystem.losses_until_ng_reduction : "N/A";
+                    
+                    // NG+ Math & Unlock Lookup
+                    const rawCycle = parseInt(data.game_info.cycle);
+                    if (!isNaN(rawCycle)) {
+                        const adjustedCycle = Math.max(0, rawCycle - 1);
+                        document.getElementById('ng-cycle').innerText = "Level " + adjustedCycle;
+                        
+                        // Set NG Unlock
+                        document.getElementById('ng-unlock').innerText = ngUnlockMap[adjustedCycle] || "None";
+                    } else {
+                        document.getElementById('ng-cycle').innerText = "-";
+                        document.getElementById('ng-unlock').innerText = "-";
+                    }
+
                 } catch (e) {
-                    console.error("JSON Parse Error:", e);
+                    console.error("JSON Error:", e);
                 }
             }
         };
-
-        xhr.onerror = function () {
-            console.error("Failed to read game_stats.json. Ensure the file is in the same folder as this HTML.");
-        };
-
         xhr.send();
     }
 
-    // Update every 2 seconds
-    setInterval(updateHUD, 2000);
-    updateHUD();
+    // Initialize
+    loadNameMap().then(() => {
+        updateHUD();
+        setInterval(updateHUD, 2000);
+    });
 </script>
-
 
 </body>
 </html>
- 
