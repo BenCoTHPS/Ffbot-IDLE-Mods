@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FFBot Mod Overlays</title>
+    <title>FFBot Session HUD - OBS Overlay</title>
     <style>
         body {
             background-color: #0f172a;
             color: #f1f5f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px 20px;
+            padding: 60px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            line-height: 1.6;
         }
 
         h1 {
@@ -22,159 +23,96 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 600px;
             width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            text-align: center;
         }
 
         .source-box {
             background: #1e293b;
-            padding: 25px;
-            border-radius: 8px;
+            padding: 30px;
+            border-radius: 12px;
             border: 1px solid #334155;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            margin-top: 20px;
         }
 
-        .source-box h2 {
-            margin-top: 0;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 10px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+        .requirement-banner {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
         }
 
         .btn {
             background: #38bdf8;
             color: #0f172a;
             text-decoration: none;
-            padding: 10px 15px;
-            border-radius: 4px;
+            padding: 14px 25px;
+            border-radius: 6px;
             font-weight: bold;
             display: inline-block;
-            cursor: pointer;
-            border: none;
-            transition: background 0.2s;
+            transition: transform 0.2s, background 0.2s;
+            font-size: 1.1rem;
         }
 
-        .btn:hover { background: #0ea5e9; }
-
-        .btn-dl {
-            background: #475569;
-            color: #f1f5f9;
+        .btn:hover {
+            background: #0ea5e9;
+            transform: translateY(-2px);
         }
 
-        .btn-dl:hover { background: #64748b; }
-        
-        .code-block {
-            background: #000;
-            padding: 12px;
-            color: #4ade80;
-            border-radius: 4px;
+        .obs-info {
+            margin-top: 20px;
+            color: #94a3b8;
             font-size: 0.9rem;
-            margin-bottom: 15px;
-            border: 1px dashed #4ade80;
-            word-break: break-all;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <h1>FFBot OBS Overlays</h1>
-    <p>Use the links below to configure and preview your local stream overlays.</p>
-
     <div class="container">
+        <h1>FFBot OBS Overlay</h1>
+        <p>This is an example OBS overlay for FFBot stream integration.</p>
+
         <div class="source-box">
-            <h2>Session HUD Customizer</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem;">A compact, clean overlay showing current boss, time, wave progress, NG+ Level, and active party details.</p>
-            <p><strong>OBS Dimensions:</strong> 320 x 250</p>
-            
-            <div style="margin: 20px 0; display: flex; gap: 20px; align-items: center; background: #0f172a; padding: 15px; border-radius: 6px; flex-wrap: wrap;">
-                <label style="display: flex; flex-direction: column; gap: 5px;">
-                    <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: bold;">Background</span>
-                    <input type="color" id="bgColor" value="#0f172a" style="border:none; width:70px; height:35px; cursor:pointer;">
-                </label>
-                <label style="display: flex; flex-direction: column; gap: 5px;">
-                    <span style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: bold;">Accent Color</span>
-                    <input type="color" id="accentColor" value="#38bdf8" style="border:none; width:70px; height:35px; cursor:pointer;">
-                </label>
-                
-                <div class="btn-group" style="margin-top: 0; align-items: flex-end; padding-bottom: 2px;">
-                    <a id="previewLink" href="session-hud-browser.html" target="_blank" class="btn" style="background: #334155; color: white;">Open Live Preview</a>
-                    <a href="session-hud-browser.html" download class="btn btn-dl">Download HTML</a>
-                </div>
+            <div class="requirement-banner">
+                <strong>Important:</strong> This overlay requires the <strong>CSV and JSON mod</strong> to be installed and running to pull real-time game data.
             </div>
 
-            <div style="background: #0f172a; padding: 15px; border-radius: 6px; border: 1px solid #38bdf8;">
-                <h4 style="margin: 0 0 10px 0; color: #38bdf8; font-size: 1rem;">OBS Local Integration Instructions</h4>
-                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 10px; line-height: 1.5;">
-                    1. Add a Browser Source in OBS, check <strong>"Local file"</strong>, and browse to your downloaded <strong>session-hud-browser.html</strong>.<br>
-                    2. Uncheck "Local file" to reveal the full file URL path.<br>
-                    3. Copy the string below and <strong>append (paste)</strong> it to the very end of the URL field in OBS.<br>
-                    <span style="color: #94a3b8; font-size: 0.8rem;"><em>Example: file:///C:/Games/FFBot/session-hud-browser.html<strong>?bg=0f172a&accent=38bdf8</strong></em></span>
-                </p>
-                
-                <code id="obsParams" class="code-block">?bg=0f172a&accent=38bdf8</code>
-                <button onclick="copyParams()" class="btn" style="width: 100%;">Copy Parameter String</button>
+            <a href="session-hud-browser.html" class="btn">Launch Session HUD</a>
+
+            <div class="obs-info">
+                <strong>Recommended OBS Settings:</strong><br>
+                Width: 320px | Height: 250px
             </div>
         </div>
 
-        <div class="source-box">
-            <h2>Classic Game Stats</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem;">Large format overview of the active session.</p>
-            <p><strong>OBS Dimensions:</strong> 450 x 650</p>
-            <div class="btn-group">
-                <a href="game-stats-browser.html" target="_blank" class="btn">Preview Game Stats</a>
-                <a href="game-stats-browser.html" download class="btn btn-dl">Download HTML</a>
-            </div>
-        </div>
-
-        <div class="source-box">
-            <h2>Player Profile Stats</h2>
-            <p style="color: #94a3b8; font-size: 0.95rem;">Persistent character growth, collection, and passives.</p>
-            <p><strong>OBS Dimensions:</strong> 380 x 550</p>
-            <div class="btn-group">
-                <a href="player-stats-browser.html" target="_blank" class="btn">Preview Player Stats</a>
-                <a href="player-stats-browser.html" download class="btn btn-dl">Download HTML</a>
-            </div>
-        </div>
+        <footer>
+            Created by <a href="https://github.com/enzemo" target="_blank">enzemo</a>
+        </footer>
     </div>
 
-    <script>
-        const bgInput = document.getElementById('bgColor');
-        const accentInput = document.getElementById('accentColor');
-        const obsParams = document.getElementById('obsParams');
-        const previewLink = document.getElementById('previewLink');
-
-        function updateConfig() {
-            // Remove the # to pass a clean hex code in the URL
-            const bg = bgInput.value.replace('#', '');
-            const accent = accentInput.value.replace('#', '');
-            const paramString = `?bg=${bg}&accent=${accent}`;
-            
-            // Update UI elements
-            obsParams.innerText = paramString;
-            previewLink.href = `session-hud-browser.html${paramString}`;
-        }
-
-        function copyParams() {
-            navigator.clipboard.writeText(obsParams.innerText);
-            alert("Parameter String copied!\nPaste this at the end of the URL in your OBS Browser Source.");
-        }
-
-        // Listen for color changes
-        bgInput.addEventListener('input', updateConfig);
-        accentInput.addEventListener('input', updateConfig);
-        
-        // Init on page load
-        window.onload = updateConfig;
-    </script>
 </body>
 </html>
- 
