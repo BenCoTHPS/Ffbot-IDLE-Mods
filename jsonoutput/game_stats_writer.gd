@@ -683,6 +683,45 @@ func write_ascend_stats_json(player_name: String, playerdatabase_node, table_nod
 	else:
 		print("Failed to open user://ascend_stats.json for writing")
 
+# Write freehire data as JSON (for freehire_set function)
+func write_freehire_json(player_name: String, freehire_character: String):
+	print("Writing freehire JSON for player: ", player_name, " with character: ", freehire_character)
+	
+	# Create freehire data JSON
+	var freehire_data = {
+		"timestamp": Time.get_datetime_string_from_system(),
+		"unix_timestamp": Time.get_unix_time_from_system(),
+		"player_name": player_name,
+		"freehire_character": freehire_character,
+		"event_type": "freehire_assigned"
+	}
+	
+	var json_string = JSON.stringify(freehire_data, "\t")
+	print("DEBUG: Freehire JSON string length: ", json_string.length())
+	
+	# Write to user:// first
+	var file = FileAccess.open("user://freehire.json", FileAccess.WRITE)
+	if file:
+		file.store_string(json_string)
+		file.close()
+		print("Freehire JSON written to user:// for player: ", player_name)
+		
+		# Copy to game directory
+		copy_freehire_to_game_dir(json_string)
+	else:
+		print("Failed to open user://freehire.json for writing")
+
+func copy_freehire_to_game_dir(json_string: String):
+	var dest_file = FileAccess.open("freehire.json", FileAccess.WRITE)
+	if dest_file:
+		dest_file.store_string(json_string)
+		dest_file.close()
+		print("Copied freehire.json to game directory")
+	else:
+		print("Failed to copy freehire.json to game directory")
+
+
+
 # Update all game stats with comprehensive information (JSON only)
 func update_all_game_stats(player_count: int, boss_name: String, attempt_number: int, table_node):
 	print("Updating all game stats...")
