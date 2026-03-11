@@ -68,13 +68,3 @@ Live examples of how this data can be visualized can be found here: [https://enz
 * **Battle Progress**: Live tracking of Boss Name, Boss HP, and Wave completion percentage.
 * **Hire System**: Displays the currently available Hire (e.g., Vivi).
 * **Party Status**: Real-time ATB, LB Charge, and Status Effects for all active units.
-
-## Project Structure
-* `index.html`: Central directory for the overlays.
-* `game-stats-browser.html`: Live battle and session overlay.
-* `player-stats-browser.html`: Persistent character attribute overlay.
-* `session-hud-browser.html`: Browser source for obs. Requires Json mod and csv database to resolve unlocks and correct encounter names (editable) 
-* `player_stats.json`: Sample output of player data.
-* `game_stats.json`: Sample output of session data.
-* `gameover.wav`: Required file for  audio alerts.
-* `FFBot.csv`: Database to power the session hud browser 
