@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OBS - Main HUD</title>
+    <style>
+        :root { --bg-color: #000000; --accent-color: #e9ac2e; --text-main: #f1f5f9; --text-dim: #94a3b8; }
+        body { background: rgba(0,0,0,0); color: var(--text-main); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; width: 320px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
+        .hud-wrapper { 
+            background: color-mix(in srgb, var(--bg-color) 90%, transparent); 
+            backdrop-filter: blur(8px); 
+            border-radius: 6px; 
+            padding: 14px; 
+            border: 2px solid var(--accent-color); 
+        }
+        .target-name { font-weight: 800; font-size: 1.1rem; text-transform: uppercase; text-align: center; display: block; margin-bottom: 8px; border-bottom: 2px solid rgba(233, 172, 46, 0.2); }
+        .row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 0.85rem; align-items: center; }
+        .label { color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
+        .val { font-weight: bold; color: var(--accent-color); }
+        .bar-bg { width: 100%; height: 4px; background: rgba(51, 65, 85, 0.8); border-radius: 2px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--accent-color); transition: width 0.8s ease; }
+        .footer-stats { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(233, 172, 46, 0.2); padding-top: 10px; }
+    </style>
+</head>
+<body>
+<div class="hud-wrapper">
+    <span class="target-name" id="target">WAITING...</span>
+    <div class="row" style="margin-bottom: 0;"><span class="label">Wave Progress</span><span class="val" id="wave-text">0 / 0</span></div>
+    <div class="bar-bg"><div id="wave-bar" class="bar-fill"></div></div>
+    <div class="row" style="margin-top: 12px;"><span class="label">Attempts</span><span class="val" id="attempts">-</span></div>
+    <div class="row"><span class="label">NG+ Level</span><span class="val" id="ng-cycle">-</span></div>
+    <div class="row"><span class="label">NG+ Unlock</span><span class="val" id="ng-unlock">-</span></div>
+    <div class="footer-stats">
+        <div><span class="label">Party</span><div class="val"><span id="players">0</span> Units</div></div>
+        <div style="text-align: right;"><span class="label">Progress</span><div class="val" id="comp">0%</div></div>
+    </div>
+</div>
+<script>
+    let nameMap = {}, ngUnlockMap = {};
+    async function loadData() {
+        const res = await fetch('FFBot.csv');
+        const text = await res.text();
+        const lines = text.split(/\r?\n/).filter(l => l.trim());
+        const headers = lines[0].split(',');
+        
+        const iIdx = headers.indexOf('internal name'), dIdx = headers.indexOf('Display name');
+        // Column I (Index 8) is NG Unlocks, Column J (Index 9) is NG level
+        const uIdx = 8; 
+        const nIdx = 9; 
+
+        lines.slice(1).forEach(l => {
+            const p = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (iIdx !== -1) nameMap[p[iIdx].trim()] = p[dIdx]?.trim();
+            if (p[nIdx]) {
+                ngUnlockMap[p[nIdx].trim()] = p[uIdx]?.trim() || "None";
+            }
+        });
+    }
+
+    function update() {
+        fetch("game_stats.json?t=" + Date.now()).then(r => r.json()).then(d => {
+            const raw = d.game_info.current_boss;
+            document.getElementById('target').innerText = (nameMap[raw] || raw).toUpperCase();
+            document.getElementById('wave-text').innerText = `${d.wave_info.current_wave} / ${d.wave_info.max_waves}`;
+            document.getElementById('wave-bar').style.width = d.wave_info.wave_progress_percent + '%';
+            
+            const pSystem = d.game_info.pity_system;
+            document.getElementById('attempts').innerText = pSystem ? pSystem.losses_until_ng_reduction : "N/A";
+            
+            const cycle = parseInt(d.game_info.cycle);
+            if (!isNaN(cycle)) {
+                const adj = Math.max(0, cycle - 1);
+                document.getElementById('ng-cycle').innerText = "Level " + adj;
+            }
+
+            // Calculation: ng_plus_attempt minus 1
+            const currentAttempt = d.game_info.ng_plus_attempt ?? 0;
+            const lookupValue = Math.max(0, currentAttempt - 1); 
+            
+            // Format: Reward (Level)
+            const unlockText = ngUnlockMap[lookupValue] || "None";
+            document.getElementById('ng-unlock').innerText = `${unlockText} (${lookupValue})`;
+
+            document.getElementById('players').innerText = d.game_info.players_in_run;
+            document.getElementById('comp').innerText = d.progression.completion_rate + '%';
+        }).catch(e => console.warn("Waiting for game_stats.json..."));
+    }
+    loadData().then(() => { update(); setInterval(update, 2000); });
+</script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OBS - Player Overlay</title>
+    <style>
+        :root { 
+            --bg-color: #000000; 
+            --accent-color: #e9ac2e; 
+            --text-main: #f1f5f9; 
+            --text-dim: #94a3b8;
+            --toast-blue: #3b82f6;
+            --status-red: #ef4444;
+            --status-green: #22c55e;
+        }
+        body { 
+            background: rgba(0,0,0,0); 
+            color: var(--text-main); 
+            font-family: 'Segoe UI', sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            width: 320px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+        }
+        .overlay { 
+            background: color-mix(in srgb, var(--bg-color) 90%, transparent); 
+            backdrop-filter: blur(8px);
+            border: 2px solid var(--accent-color); 
+            border-radius: 6px; 
+            padding: 12px; 
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(233,172,46,0.2);
+            padding-bottom: 8px;
+        }
+
+        #unit-icon {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+
+        .name-stack {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .player-name { font-weight: 800; font-size: 1.1rem; text-transform: uppercase; margin: 0; }
+        .unit-name { color: var(--accent-color); font-weight: bold; text-transform: uppercase; font-size: 0.85rem; margin: 0; }
+        
+        /* Centering Wins between the status texts */
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.75rem; }
+        .status-text { font-weight: 800; text-transform: uppercase; font-size: 0.7rem; width: 80px; }
+        #status-freehire { text-align: left; }
+        #status-ascension { text-align: right; }
+        .wins-center { flex-grow: 1; text-align: center; font-weight: 800; font-size: 0.9rem; color: var(--text-main); }
+        
+        .label { color: var(--text-dim); text-transform: uppercase; font-size: 0.6rem; font-weight: bold; margin-bottom: 2px; }
+        .stats-line { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 6px 4px; border-radius: 4px; margin-bottom: 8px; }
+        .stat-unit { display: flex; flex-direction: column; align-items: center; flex: 1; }
+        .stat-val { font-weight: 800; font-size: 0.8rem; color: var(--text-dim); }
+        .highlight-text { color: var(--text-main); }
+        .highlight-val { color: var(--accent-color) !important; text-shadow: 0 0 8px var(--accent-color); }
+
+        .collection-section { 
+            background: rgba(233, 172, 46, 0.1);
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collection-val { font-weight: 800; font-size: 0.8rem; color: var(--accent-color); }
+
+        .passive-section { border-top: 1px solid rgba(233,172,46,0.1); padding-top: 6px; margin-top: 4px; }
+        .passive-line { font-size: 0.75rem; margin-bottom: 4px; display: flex; align-items: baseline; flex-wrap: wrap; }
+        .passive-highlight { color: var(--accent-color); font-weight: bold; }
+        .win-prefix { color: var(--text-dim); margin-right: 4px; }
+        .separator { color: var(--text-dim); margin-right: 8px; }
+
+        .toast-base {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); border-radius: 6px; box-sizing: border-box;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 10px; opacity: 0;
+            pointer-events: none; transition: opacity 0.4s ease-in-out;
+            z-index: 100;
+        }
+        .toast-base.active { opacity: 1; pointer-events: auto; }
+        
+        #ascend-toast { border: 2px solid var(--toast-blue); }
+        #freehire-toast { border: 2px solid var(--status-green); }
+
+        @keyframes winPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); color: var(--status-green); }
+            100% { transform: scale(1); }
+        }
+        .pulse { display: inline-block; animation: winPulse 0.8s ease-in-out 12; }
+    </style>
+</head>
+<body>
+<div class="overlay">
+    <div class="header-container">
+        <img id="unit-icon" src="" alt="" style="visibility: hidden;">
+        <div class="name-stack">
+            <span class="player-name" id="p-name">PLAYER</span>
+            <div id="p-unit" class="unit-name">UNIT</div>
+        </div>
+    </div>
+    
+    <div class="info-row">
+        <span id="status-freehire" class="status-text">Freehire</span>
+        <div class="wins-center"><span id="p-wins">-</span></div>
+        <span id="status-ascension" class="status-text">Ascension</span>
+    </div>
+    
+    <div class="stats-line">
+        <div class="stat-unit"><span class="label" id="l-hp">HP</span><span class="stat-val" id="p-hp">-</span></div>
+        <div class="stat-unit"><span class="label" id="l-attack">ATK</span><span class="stat-val" id="p-attack">-</span></div>
+        <div class="stat-unit"><span class="label" id="l-magic">MAG</span><span class="stat-val" id="p-magic">-</span></div>
+        <div class="stat-unit"><span class="label" id="l-spirit">SPI</span><span class="stat-val" id="p-spirit">-</span></div>
+        <div class="stat-unit"><span class="label">Level</span><span class="stat-val" id="p-level" style="color: var(--text-main)">-</span></div>
+    </div>
+
+    <div class="collection-section">
+        <span class="label">Collection Progress</span>
+        <span id="p-collection" class="collection-val">- / - (-%)</span>
+    </div>
+
+    <div class="passive-section">
+        <div class="passive-line">
+            <span class="label">Selected Passive:</span>
+            <span id="p-selected" class="passive-highlight" style="margin-left:5px;">None</span>
+        </div>
+        <div class="passive-line">
+            <div id="p-available-container" style="display: flex; flex-wrap: wrap;"></div>
+        </div>
+    </div>
+
+    <div id="ascend-toast" class="toast-base">
+        <div style="color: var(--toast-blue); font-weight: 800; font-size: 0.9rem; text-transform: uppercase;">Ascension Preview</div>
+        <div id="toast-player" style="font-weight: bold; font-size: 1rem; margin-bottom: 4px;">-</div>
+        <div style="font-size: 0.75rem; margin-bottom: 8px;"><span class="label">Total Wins:</span> <span id="t-wins" style="font-weight: bold; color: var(--text-main);">0</span></div>
+        <div class="label">Projected Stats</div>
+        <div class="stats-line" style="width: 90%; background: rgba(59, 130, 246, 0.1);">
+            <div class="stat-unit"><span class="label">HP</span><span id="t-hp" class="stat-val" style="color:var(--text-main)">-</span></div>
+            <div class="stat-unit"><span class="label">ATK</span><span id="t-atk" class="stat-val" style="color:var(--text-main)">-</span></div>
+            <div class="stat-unit"><span class="label">MAG</span><span id="t-mag" class="stat-val" style="color:var(--text-main)">-</span></div>
+            <div class="stat-unit"><span class="label">SPI</span><span id="t-spi" class="stat-val" style="color:var(--text-main)">-</span></div>
+        </div>
+        <div style="margin-top: 10px; color: #22c55e; font-weight: bold; font-size: 0.85rem;">Type "!yes" to confirm</div>
+    </div>
+
+    <div id="freehire-toast" class="toast-base">
+        <div id="fh-pname" style="font-weight: 800; font-size: 1.1rem; text-transform: uppercase;">-</div>
+        <img id="fh-unit-icon" src="" alt="" style="width: 80px; height: 80px; object-fit: contain; margin: 10px 0; display: none;">
+        <div id="fh-unit" style="color: var(--status-green); font-weight: bold; font-size: 1.3rem; margin-top: 5px;">-</div>
+    </div>
+</div>
+
+<script>
+    let lastAscendContent = null, toastTimer = null;
+    let lastFreehireContent = null, fhToastTimer = null, pulseTimer = null;
+    let currentWins = 0;
+    let csvMapping = []; 
+
+    function loadCSV() {
+        fetch("FFBot.csv?t=" + Date.now())
+            .then(r => r.text())
+            .then(text => {
+                const lines = text.split(/\r?\n/);
+                csvMapping = lines.map(line => {
+                    const cols = line.split(',');
+                    return { id: cols[1]?.trim(), file: cols[2]?.trim() };
+                }).filter(item => item.id && item.file);
+            })
+            .catch(e => console.error("CSV load error:", e));
+    }
+
+    function formatStat(num) {
+        if (!num || isNaN(num)) return "-";
+        if (num >= 1000000) return (num / 1000000).toFixed(2).replace(/\.00$/, '') + "M";
+        if (num >= 1000) return Math.floor(num / 1000) + "k";
+        return num;
+    }
+
+    function updatePlayer() {
+        fetch("player_stats.json?t=" + Date.now()).then(r => r.json()).then(data => {
+            const char = data.character_info || {}, 
+                  basic = data.basic_stats || {}, 
+                  passives = data.passives || {}, 
+                  fh = data.free_hire || {},
+                  coll = data.collection || {};
+            
+            document.getElementById('p-name').innerText = data.player_name || "PLAYER";
+            
+            const unitID = char.unit || "UNIT";
+            document.getElementById('p-unit').innerText = unitID;
+
+            if (csvMapping.length > 0) {
+                const match = csvMapping.find(m => m.id === unitID);
+                const imgEl = document.getElementById('unit-icon');
+                if (match) {
+                    imgEl.src = `units/${match.file}.png`; 
+                    imgEl.style.visibility = 'visible';
+                } else {
+                    imgEl.style.visibility = 'hidden';
+                }
+            }
+            
+            // Swap: Level in stats-line, Wins in info-row
+            currentWins = basic.wins ?? 0;
+            document.getElementById('p-wins').innerText = currentWins;
+            document.getElementById('p-level').innerText = basic.level || "-";
+
+            const collected = coll.collected ?? 0;
+            const total = coll.total ?? 0;
+            const percent = coll.percentage ?? 0;
+            document.getElementById('p-collection').innerText = `${collected}/${total} (${percent}%)`;
+
+            const fhStatus = document.getElementById('status-freehire');
+            fhStatus.style.color = fh.available === true ? "var(--status-green)" : "var(--status-red)";
+
+            const ascStatus = document.getElementById('status-ascension');
+            ascStatus.style.color = currentWins >= 100 ? "var(--status-green)" : "var(--status-red)";
+
+            let pref = (basic.preferred_stat || "").toLowerCase();
+            const mapping = { "atk": "attack", "mag": "magic", "spi": "spirit", "hp": "hp" };
+            const finalPref = mapping[pref] || pref;
+
+            ['hp', 'attack', 'magic', 'spirit'].forEach(k => {
+                const valEl = document.getElementById('p-' + k), labelEl = document.getElementById('l-' + k);
+                valEl.innerText = formatStat(basic[k]);
+                if(k === finalPref) { valEl.classList.add('highlight-val'); labelEl.classList.add('highlight-text'); }
+                else { valEl.classList.remove('highlight-val'); labelEl.classList.remove('highlight-text'); }
+            });
+
+            let selected = passives.season5_passive || "None";
+            if (selected === "Unknown") selected = "Locked";
+            document.getElementById('p-selected').innerText = selected;
+            
+            const container = document.getElementById('p-available-container');
+            container.innerHTML = "";
+            if (passives.available_passives && passives.available_passives.length > 0) {
+                passives.available_passives.forEach((p, index) => {
+                    const wrapper = document.createElement('span');
+                    const prefix = document.createElement('span');
+                    prefix.className = 'win-prefix';
+                    prefix.innerText = index === 0 ? "100 Wins: " : (index === 1 ? "200 Wins: " : "");
+                    wrapper.appendChild(prefix);
+                    const name = document.createElement('span');
+                    name.className = 'passive-highlight';
+                    name.innerText = (p.name === "Unknown" ? "Locked" : p.name);
+                    wrapper.appendChild(name);
+                    if (index < passives.available_passives.length - 1) {
+                        const sep = document.createElement('span');
+                        sep.className = 'separator';
+                        sep.innerText = ",";
+                        wrapper.appendChild(sep);
+                    }
+                    container.appendChild(wrapper);
+                });
+            } else { container.innerText = "None Unlocked"; }
+        }).catch(e => console.warn("Update error:", e));
+    }
+
+    // Ascend and Freehire monitor functions remain unchanged...
+    function checkAscendFile() {
+        fetch("ascend_stats.json?t=" + Date.now()).then(r => r.text()).then(text => {
+            if (lastAscendContent !== null && text !== lastAscendContent) {
+                const data = JSON.parse(text), stats = data.new_stats_after_ascend || {};
+                document.getElementById('toast-player').innerText = data.player_name || "PLAYER";
+                document.getElementById('t-wins').innerText = currentWins;
+                document.getElementById('t-hp').innerText = formatStat(stats.hp);
+                document.getElementById('t-atk').innerText = formatStat(stats.attack);
+                document.getElementById('t-mag').innerText = formatStat(stats.magic);
+                document.getElementById('t-spi').innerText = formatStat(stats.spirit);
+                const toast = document.getElementById('ascend-toast');
+                toast.classList.add('active');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => { toast.classList.remove('active'); }, 10000);
+            }
+            lastAscendContent = text;
+        }).catch(e => console.warn("Ascend check error:", e));
+    }
+
+    function checkFreehireFile() {
+        fetch("freehire.json?t=" + Date.now()).then(r => r.json()).then(data => {
+            const rawText = JSON.stringify(data);
+            if (lastFreehireContent !== null && rawText !== lastFreehireContent) {
+                if (data.event_type === "freehire_assigned") {
+                    const fhUnitName = data.freehire_character || "UNIT";
+                    document.getElementById('fh-pname').innerText = data.player_name || "PLAYER";
+                    document.getElementById('fh-unit').innerText = fhUnitName;
+                    const iconEl = document.getElementById('fh-unit-icon');
+                    if (csvMapping.length > 0) {
+                        const match = csvMapping.find(m => m.id === fhUnitName);
+                        if (match) { iconEl.src = `units/${match.file}.png`; iconEl.style.display = 'block'; }
+                        else { iconEl.style.display = 'none'; }
+                    }
+                    const toast = document.getElementById('freehire-toast');
+                    toast.classList.add('active');
+                    clearTimeout(fhToastTimer);
+                    fhToastTimer = setTimeout(() => { toast.classList.remove('active'); }, 10000);
+                } else {
+                    const winEl = document.getElementById('p-wins');
+                    winEl.classList.add('pulse');
+                    clearTimeout(pulseTimer);
+                    pulseTimer = setTimeout(() => { winEl.classList.remove('pulse'); }, 10000);
+                }
+            }
+            lastFreehireContent = rawText;
+        }).catch(e => console.warn("Freehire check error:", e));
+    }
+
+    loadCSV();
+    setInterval(updatePlayer, 2000);
+    setInterval(checkAscendFile, 1000);
+    setInterval(checkFreehireFile, 1000);
+    updatePlayer();
+</script>
+</body>
+</html>

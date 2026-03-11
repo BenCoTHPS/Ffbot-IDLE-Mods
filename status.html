@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OBS - Status Overlay</title>
+    <style>
+        :root { --bg-color: #000000; --accent-color: #e9ac2e; --text-main: #f1f5f9; --text-dim: #94a3b8; }
+        body { background: rgba(0,0,0,0); color: var(--text-main); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; width: 320px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
+        .status-wrapper { 
+            background: color-mix(in srgb, var(--bg-color) 90%, transparent); 
+            backdrop-filter: blur(8px); 
+            border-radius: 6px; 
+            padding: 12px; 
+            border: 2px solid var(--accent-color); 
+        }
+        .row { display: flex; justify-content: space-between; margin: 6px 0; font-size: 0.85rem; align-items: center; }
+        .passive-desc { font-size: 0.75rem; color: var(--text-dim); font-style: italic; margin-top: -4px; margin-bottom: 8px; line-height: 1.2; border-left: 2px solid var(--accent-color); padding-left: 8px; }
+        .label { color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
+        .val { font-weight: bold; color: var(--accent-color); text-align: right; display: flex; align-items: center; gap: 10px; }
+        
+        /* Doubled size to 48px */
+        #hire-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="status-wrapper">
+    <div class="row">
+        <span class="label">!passive</span>
+        <span class="val" id="passive">None</span>
+    </div>
+    <div id="passive-effect" class="passive-desc">No passive active.</div>
+    <div class="row" style="margin-bottom: 0;">
+        <span class="label">!hire</span>
+        <div class="val">
+            <img id="hire-icon" src="" alt="" style="display: none;">
+            <span id="hire">None</span>
+        </div>
+    </div>
+</div>
+<script>
+    let passiveMap = {};
+    let unitImageMap = {}; 
+
+    async function loadResources() {
+        try {
+            const res = await fetch('FFBot.csv?t=' + Date.now());
+            const text = await res.text();
+            const lines = text.split(/\r?\n/).filter(l => l.trim());
+            const headers = lines[0].split(',');
+            
+            const passNameIdx = headers.indexOf('Passive Name');
+            const passEffectIdx = headers.indexOf('Passive Effect');
+            const internalNameIdx = headers.indexOf('internal name'); 
+            const fileNameIdx = headers.indexOf('File name');         
+
+            lines.slice(1).forEach(l => {
+                const p = l.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                
+                if (passNameIdx !== -1 && p[passNameIdx]) {
+                    passiveMap[p[passNameIdx].trim().toLowerCase()] = p[passEffectIdx]?.trim().replace(/^"|"$/g, '') || "No effect listed.";
+                }
+
+                if (internalNameIdx !== -1 && fileNameIdx !== -1 && p[internalNameIdx]) {
+                    unitImageMap[p[internalNameIdx].trim().toLowerCase()] = p[fileNameIdx]?.trim();
+                }
+            });
+        } catch (e) {
+            console.error("Error loading CSV:", e);
+        }
+    }
+
+    function update() {
+        fetch("game_stats.json?t=" + Date.now())
+            .then(r => r.json())
+            .then(d => {
+                const runInfo = d.run_info || {};
+                const hireSystem = runInfo.hire_system || {};
+
+                const currentPassive = runInfo.current_passive || "None";
+                document.getElementById('passive').innerText = currentPassive;
+                document.getElementById('passive-effect').innerText = passiveMap[currentPassive.toLowerCase()] || "Description not found.";
+                
+                const currentHire = hireSystem.current_hire || "None";
+                document.getElementById('hire').innerText = currentHire;
+
+                const iconEl = document.getElementById('hire-icon');
+                const fileName = unitImageMap[currentHire.toLowerCase()];
+                
+                if (fileName && currentHire !== "None") {
+                    iconEl.src = `units/${fileName}.png`; 
+                    iconEl.style.display = 'block';
+                } else {
+                    iconEl.style.display = 'none';
+                }
+            })
+            .catch(e => console.warn("Polling game_stats.json..."));
+    }
+
+    loadResources().then(() => { 
+        update(); 
+        setInterval(update, 2000); 
+    });
+</script>
+</body>
+</html>
