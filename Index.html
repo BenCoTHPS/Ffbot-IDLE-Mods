@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ffbot-IDLE-Mods | Overlays</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            background: #252525;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        h1 { color: #58a6ff; margin-bottom: 0.5rem; }
+        p { color: #8b949e; }
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 2rem 0;
+        }
+        .overlay-link {
+            background: #30363d;
+            color: #c9d1d9;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #444c56;
+            transition: all 0.2s;
+        }
+        .overlay-link:hover {
+            background: #58a6ff;
+            color: #ffffff;
+            border-color: #58a6ff;
+        }
+        .repo-link {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .repo-link:hover { text-decoration: underline; }
+        .note {
+            font-size: 0.85rem;
+            background: #2d2315;
+            color: #d29922;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #d29922;
+            text-align: left;
+            margin-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Ffbot-IDLE-Mods</h1>
+    <p>Example overlays utilizing GitHub-hosted JSON data.</p>
+
+    <div class="links-container">
+        <a href="session-hud.html" class="overlay-link">Session HUD Overlay</a>
+        <a href="player-stats.html" class="overlay-link">Player Stats Overlay</a>
+        <a href="status.html" class="overlay-link">System Status Overlay</a>
+    </div>
+
+    <div class="note">
+        <strong>Note:</strong> These overlays include toast notification features for <em>Ascension</em> and <em>Freehire</em>. Please be aware that these features are unavailable in the GitHub preview as they require local file changes to trigger.
+    </div>
+
+    <a href="https://github.com/Enzemo/Ffbot-IDLE-Mods/" class="repo-link">
+        View Project on GitHub →
+    </a>
+</div>
+
+</body>
+</html>
