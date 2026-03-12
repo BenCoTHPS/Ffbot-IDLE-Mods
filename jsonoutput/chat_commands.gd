@@ -79,3 +79,20 @@
 				fallback_writer = get_node_or_null("%game_stats_writer")
 				if fallback_writer:
 					fallback_writer.write_freehire_json(name, freehire)
+
+
+#put in func missing(name)
+
+# Output JSON file with all missing characters
+		if game_stats_writer:
+			game_stats_writer.write_missing_json(name, missed_list)
+		else:
+			# Fallback: try to find the node dynamically
+			var fallback_writer = get_node_or_null("../game_stats_writer")
+			if fallback_writer:
+				fallback_writer.write_missing_json(name, missed_list)
+			else:
+				# Try another common path
+				fallback_writer = get_node_or_null("%game_stats_writer")
+				if fallback_writer:
+					fallback_writer.write_missing_json(name, missed_list)
