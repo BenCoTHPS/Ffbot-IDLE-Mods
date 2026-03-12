@@ -1,6 +1,8 @@
 # Ffbot-IDLE-Mods
 Mods for Elbody's [FFBot Idle Game](https://elbody.itch.io/ffbot)
 
+This is a pretty rough code base with poor instructions. For most of you, grab the latest release and the html files (you don't need index). Add them as obs browser sources or whatever you want to do. They will update with the game  when it generates jsons (new wave, stats command, freehire,ascend, missing etc). 
+
 **Disclaimer:** Use of these mods may or may not ban you from game leaderboards! **Always back up your original `ffbot.pck` and save files before attempting to mod your game.**
 
 ## Project Overview
@@ -68,3 +70,55 @@ Live examples of how this data can be visualized can be found here: [https://enz
 * **Battle Progress**: Live tracking of Boss Name, Boss HP, and Wave completion percentage.
 * **Hire System**: Displays the currently available Hire (e.g., Vivi).
 * **Party Status**: Real-time ATB, LB Charge, and Status Effects for all active units.
+
+### Player stats html deserves it's own section 
+
+# OBS Player Overlay System
+
+A dynamic, data-driven browser overlay designed for OBS (Open Broadcaster Software). This overlay provides a real-time visual interface for player statistics, character collection progress, and automated event notifications.
+
+## 🚀 Features
+
+### Real-Time Statistics
+The overlay continuously monitors `player_stats.json` (every 2 seconds) to provide up-to-date information on:
+* **Identity**: Displays Player Name and current active Unit.
+* **Attributes**: Tracks HP, Attack, Magic, and Spirit with automatic highlighting for the "Preferred Stat".
+* **Progression**: Shows current Level and total Wins.
+* **Passives**: Visualizes currently selected and available season passives, including unlock milestones (100w, 200w).
+
+### Collection & Progress Tracking
+* **Progress Bar**: Displays total units collected vs. total available units and a calculated percentage.
+* **Missing Characters**: A specialized scrolling toast that lists characters yet to be hired.
+
+### Intelligent Toast System
+The system uses a priority-based queue to ensure events are displayed clearly without overlapping:
+* **Ascension Toast**: Triggered by `ascend_stats.json`, showing a preview of new stats after an ascension event.
+* **Freehire Toast**: Triggered by `freehire.json`, announcing new character assignments with unit icons.
+* **Success State**: When collection is complete, a full-screen celebration triggers with a custom message and confetti animation.
+
+## 🛠 Technical Details
+
+- **Responsive Design**: Optimized for a 320px width OBS Browser Source.
+- **Asset Mapping**: Uses `FFBot.csv` to dynamically map character names to local image assets in the `/units/` folder.
+- **Performance**: Built with efficient `setInterval` polling and JSON fetching to minimize CPU impact while streaming.
+- **UI/UX**: Features a glass-morphism aesthetic with backdrop blurring for maximum readability over various game backgrounds.
+
+## 📂 Required Files
+
+For the overlay to function correctly, ensure the following files are in the same directory as `player-stats.html`:
+
+| File | Description |
+| :--- | :--- |
+| `player_stats.json` | Core player data and attributes |
+| `ascend_stats.json` | Trigger for ascension events |
+| `freehire.json` | Trigger for character hire events |
+| `missing_characters.json` | Data for character collection list |
+| `FFBot.csv` | Mapping file for unit icons |
+| `/units/` | Folder containing `.png` unit icons |
+
+## ⚙️ Setup in OBS
+
+1. Add a new **Browser Source** in OBS.
+2. Select **Local File** and point it to `player-stats.html`.
+3. Set **Width** to `320` and **Height** to `400` (or higher if you have long passive lists).
+4. (Optional) Use **Custom CSS** in OBS if you need to adjust the background transparency further.
