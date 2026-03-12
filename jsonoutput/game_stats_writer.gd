@@ -695,6 +695,15 @@ func write_freehire_json(player_name: String, freehire_character: String):
 		"freehire_character": freehire_character,
 		"event_type": "freehire_assigned"
 	}
+
+func copy_missing_to_game_dir(json_string: String):
+	var dest_file = FileAccess.open("missing_characters.json", FileAccess.WRITE)
+	if dest_file:
+		dest_file.store_string(json_string)
+		dest_file.close()
+		print("Copied missing_characters.json to game directory")
+	else:
+		print("Failed to copy missing_characters.json to game directory")
 	
 	var json_string = JSON.stringify(freehire_data, "\t")
 	print("DEBUG: Freehire JSON string length: ", json_string.length())
@@ -720,7 +729,47 @@ func copy_freehire_to_game_dir(json_string: String):
 	else:
 		print("Failed to copy freehire.json to game directory")
 
-
+# Write missing characters data as JSON (for missing function)
+func write_missing_json(player_name: String, missing_characters: Array):
+	print("Writing missing characters JSON for player: ", player_name)
+	
+	# Create missing characters data JSON
+	var missing_data = {
+		"timestamp": Time.get_datetime_string_from_system(),
+		"unix_timestamp": Time.get_unix_time_from_system(),
+		"player_name": player_name,
+		"event_type": "missing_characters_requested",
+		"missing_characters": {
+			"all_missing": missing_characters,
+			"total_missing_count": missing_characters.size(),
+			"display_sample": []
+		}
+	}
+	
+	# Add 3 random samples for display (matching the original behavior)
+	if missing_characters.size() > 0:
+		var sample_size = min(3, missing_characters.size())
+		var temp_list = missing_characters.duplicate()
+		for i in range(sample_size):
+			if temp_list.size() > 0:
+				var random_index = randi() % temp_list.size()
+				missing_data.missing_characters.display_sample.append(temp_list[random_index])
+				temp_list.remove_at(random_index)
+	
+	var json_string = JSON.stringify(missing_data, "\t")
+	print("DEBUG: Missing characters JSON string length: ", json_string.length())
+	
+	# Write to user:// first
+	var file = FileAccess.open("user://missing_characters.json", FileAccess.WRITE)
+	if file:
+		file.store_string(json_string)
+		file.close()
+		print("Missing characters JSON written to user:// for player: ", player_name)
+		
+		# Copy to game directory
+		copy_missing_to_game_dir(json_string)
+	else:
+		print("Failed to open user://missing_characters.json for writing")
 
 # Update all game stats with comprehensive information (JSON only)
 func update_all_game_stats(player_count: int, boss_name: String, attempt_number: int, table_node):
