@@ -1,0 +1,108 @@
+:root {
+    --bg-color: #000000;
+    --text-dim: #94a3b8;
+    --text-main: #f1f5f9;
+    --accent-color: #e9ac2e;
+}
+
+body {
+    margin: 0;
+    width: 320px;
+    padding: 10px;
+    color: var(--text-main);
+    background: rgba(0,0,0,0);
+    font-family: 'Segoe UI', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+}
+
+.hud-wrapper {
+    padding: 14px;
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    border: 2px solid var(--accent-color);
+    background: color-mix(in srgb, var(--bg-color) 90%, transparent);
+}
+
+.status-wrapper { 
+    padding: 12px;
+    border-radius: 6px; 
+    backdrop-filter: blur(8px); 
+    border: 2px solid var(--accent-color); 
+    background: color-mix(in srgb, var(--bg-color) 90%, transparent); 
+}
+
+.target-name {
+    display: block;
+    font-weight: 800;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(233, 172, 46, 0.2);
+}
+
+.row {
+    margin: 8px 0;
+    display: flex;
+    font-size: 0.85rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.label {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--text-dim);
+    text-transform: uppercase;
+}
+
+.val {
+    gap: 10px;
+    display: flex;
+    text-align: right;
+    font-weight: bold;
+    align-items: center;
+    color: var(--accent-color);
+}
+
+.bar-bg {
+    width: 100%;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba(51, 65, 85, 0.8);
+}
+
+.bar-fill {
+    height: 100%;
+    will-change: width;
+    transition: width 0.8s ease;
+    background: var(--accent-color);
+}
+
+.footer-stats {
+    gap: 12px;
+    display: grid;
+    margin-top: 12px;
+    padding-top: 10px;
+    grid-template-columns: 1fr 1fr;
+    border-top: 1px solid rgba(233, 172, 46, 0.2);
+}
+
+#hire-icon {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.passive-desc {
+    margin-top: -4px;
+    line-height: 1.2;
+    padding-left: 8px;
+    margin-bottom: 8px;
+    font-style: italic;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    border-left: 2px solid var(--accent-color);
+}

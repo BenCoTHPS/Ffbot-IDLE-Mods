@@ -3,29 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>OBS - Status Overlay</title>
-    <style>
-        :root { --bg-color: #000000; --accent-color: #e9ac2e; --text-main: #f1f5f9; --text-dim: #94a3b8; }
-        body { background: rgba(0,0,0,0); color: var(--text-main); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; width: 320px; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
-        .status-wrapper { 
-            background: color-mix(in srgb, var(--bg-color) 90%, transparent); 
-            backdrop-filter: blur(8px); 
-            border-radius: 6px; 
-            padding: 12px; 
-            border: 2px solid var(--accent-color); 
-        }
-        .row { display: flex; justify-content: space-between; margin: 6px 0; font-size: 0.85rem; align-items: center; }
-        .passive-desc { font-size: 0.75rem; color: var(--text-dim); font-style: italic; margin-top: -4px; margin-bottom: 8px; line-height: 1.2; border-left: 2px solid var(--accent-color); padding-left: 8px; }
-        .label { color: var(--text-dim); text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
-        .val { font-weight: bold; color: var(--accent-color); text-align: right; display: flex; align-items: center; gap: 10px; }
-        
-        /* Doubled size to 48px */
-        #hire-icon {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
-    </style>
+    <link rel="stylesheet" href="./styles/global.css">
 </head>
 <body>
 <div class="status-wrapper">
