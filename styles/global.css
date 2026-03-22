@@ -12,7 +12,7 @@
     --status-red: #ef4444;
     --status-green: #22c55e;
     /* Usually set by default but paranoia is robust. */
-    font-size: 16px;
+    font-size: 24px;
 }
 /* 
 * =========================
@@ -51,6 +51,7 @@ body {
 * =========================
 */
 .overlay-wrapper {
+    overflow: hidden;
     width: 100%;
     height: 100%;
     
@@ -59,9 +60,9 @@ body {
 
     padding: 0.75rem;
     border-radius: .375rem;
-    backdrop-filter: blur(8px);
     border: .125rem solid var(--accent-color);
-    background: color-mix(in srgb, var(--bg-color) 90%, transparent);
+    background-color: color-mix(in srgb, var(--bg-color) 90%, transparent);
+    background: var(--bg-color);
 }
 /* 
 * =========================
