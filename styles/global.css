@@ -11,7 +11,7 @@
     --toast-blue: #3b82f6;
     --status-red: #ef4444;
     --status-green: #22c55e;
-
+    /* Usually set by default but paranoia is robust. */
     font-size: 16px;
 }
 /* 
@@ -28,7 +28,7 @@
 }
 
 .extra-top-margin {
-    margin-top: 12px;
+    margin-top: .75rem;
 }
 /* 
 * =========================
@@ -38,12 +38,12 @@
 body {
     margin: 0;
     padding: 0.625rem;
-    width: clamp(340px, 100%, 600px);
+    width: clamp(21.25rem, 100%, 37.5rem);
 
     color: var(--text-main);
     background: rgba(0,0,0,0);
     font-family: 'Segoe UI', sans-serif;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+    text-shadow: .125rem .125rem .25rem rgba(0,0,0,0.9);
 }
 /* 
 * =========================
@@ -58,9 +58,9 @@ body {
     position: relative;
 
     padding: 0.75rem;
-    border-radius: 6px;
+    border-radius: .375rem;
     backdrop-filter: blur(8px);
-    border: 2px solid var(--accent-color);
+    border: .125rem solid var(--accent-color);
     background: color-mix(in srgb, var(--bg-color) 90%, transparent);
 }
 /* 
@@ -69,36 +69,36 @@ body {
 * =========================
 */
 .row {
-    margin: 8px 0;
     display: flex;
+    margin: .5rem 0;
     font-size: 0.85rem;
     align-items: center;
     justify-content: space-between;
 }
 
 .header-container {
-    gap: 12px;
+    gap: .75rem;
     display: flex;
-    margin-bottom: 8px;
-    padding-bottom: 8px;
     align-items: center;
-    border-bottom: 1px solid rgba(233,172,46,0.2);
+    margin-bottom: .5rem;
+    padding-bottom: .5rem;
+    border-bottom: .0625rem solid rgba(233,172,46,0.2);
 }
 
 .footer-stats {
-    gap: 12px;
+    gap: .75rem;
     display: grid;
-    margin-top: 12px;
-    padding-top: 10px;
+    margin-top: .75rem;
+    padding-top: .625rem;
     grid-template-columns: 1fr 1fr;
-    border-top: 1px solid rgba(233, 172, 46, 0.2);
+    border-top: .0625rem solid rgba(233,172,46,0.2);
 }
 
 .footer-stats .cell {
-    gap: 4px;
+    gap: .25rem;
     display: flex;
-    padding-top: 4px;
     align-items: center;
+    padding-top: .25rem;
     flex-direction: column;
 }
 
@@ -118,10 +118,10 @@ body {
     display: block;
     font-weight: 800;
     font-size: 1.1rem;
-    margin-bottom: 8px;
     text-align: center;
+    margin-bottom: .5rem;
     text-transform: uppercase;
-    border-bottom: 2px solid rgba(233, 172, 46, 0.2);
+    border-bottom: .125rem solid rgba(233, 172, 46, 0.2);
 }
 
 .label {
@@ -133,7 +133,7 @@ body {
 
 .label.small {
     font-size: 0.6rem;
-    margin-bottom: 2px;
+    margin-bottom: .125rem;
 }
 
 .val {
@@ -170,9 +170,9 @@ body {
 
 .bar-bg {
     width: 100%;
-    height: 4px;
+    height: .25rem;
     overflow: hidden;
-    border-radius: 2px;
+    border-radius: .125rem;
     background: rgba(51, 65, 85, 0.8);
 }
 
@@ -188,29 +188,29 @@ body {
 * =========================
 */
 #hire-icon {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
+    width: 3rem;
+    height: 3rem;
     flex-shrink: 0;
+    object-fit: contain;
 }
 
 .passive-desc {
-    margin-top: -4px;
     line-height: 1.2;
-    padding-left: 8px;
-    margin-bottom: 8px;
-    font-style: italic;
     font-size: 0.75rem;
+    font-style: italic;
+    margin-top: -.25rem;
+    padding-left: .5rem;
+    margin-bottom: .5rem;
     color: var(--text-dim);
-    border-left: 2px solid var(--accent-color);
+    border-left: .125rem solid var(--accent-color);
 }
 
 #unit-icon {
-    width: 64px;
-    height: 64px;
+    width: 4rem;
+    height: 4rem;
     flex-shrink: 0;
     object-fit: contain;
-    filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 0 .3125rem rgba(0,0,0,0.5));
 }
 
 .name-stack {
@@ -224,13 +224,13 @@ body {
 .info-row {
     display: flex;
     font-size: 0.75rem;
-    margin-bottom: 8px;
     align-items: center;
+    margin-bottom: .5rem;
     justify-content: space-between;
 }
 
 .status-text {
-    width: 80px;
+    width: 5rem;
     font-weight: 800;
     font-size: 0.7rem;
     text-transform: uppercase;
@@ -246,9 +246,9 @@ body {
 
 .stats-line {
     display: flex;
-    padding: 6px 4px;
-    border-radius: 4px;
-    margin-bottom: 8px;
+    margin-bottom: .5rem;
+    border-radius: .25rem;
+    padding: .375rem .25rem;
     justify-content: space-between;
     background: rgba(255,255,255,0.05);
 }
@@ -272,17 +272,17 @@ body {
 
 .highlight-val {
     color: var(--accent-color) !important;
-    text-shadow: 0 0 8px var(--accent-color);
+    text-shadow: 0 0 .5rem var(--accent-color);
 }
 
 .collection-section {
-    background: rgba(233, 172, 46, 0.1);
-    padding: 6px 10px;
-    border-radius: 4px;
-    margin-bottom: 8px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    margin-bottom: .5rem;
+    border-radius: .25rem;
+    padding: .375rem .625rem;
+    justify-content: space-between;
+    background: rgba(233, 172, 46, 0.1);
 }
 
 .collection-val {
@@ -292,53 +292,58 @@ body {
 }
 
 .passive-section {
-    border-top: 1px solid rgba(233,172,46,0.1);
-    padding-top: 6px;
-    margin-top: 4px;
+    margin-top: .25rem;
+    padding-top: .375rem;
+    border-top: .0625rem solid rgba(233,172,46,0.1);
 }
 
 .passive-line {
-    font-size: 0.75rem;
-    margin-bottom: 4px;
     display: flex;
-    align-items: baseline;
     flex-wrap: wrap;
+    font-size: 0.75rem;
+    align-items: baseline;
+    margin-bottom: .25rem;
 }
 
 .passive-highlight {
-    color: var(--accent-color);
     font-weight: bold;
+    color: var(--accent-color);
 }
 
 .win-prefix {
+    margin-right: .25rem;
     color: var(--text-dim);
-    margin-right: 4px;
 }
 
 .separator {
+    margin-right: .5rem;
     color: var(--text-dim);
-    margin-right: 8px;
 }
 
 /* Toast System */
 .toast-base {
-    position: absolute;
     top: 0;
     left: 0;
+    z-index: 100;
+    position: absolute;
+    
     width: 100%;
     height: 100%;
-    background: var(--bg-color);
-    border-radius: 6px;
+
+    pointer-events: none;
     box-sizing: border-box;
+    
     display: flex;
+    align-items: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    padding: 10px;
+    
+    padding: .625rem;
+    border-radius: .375rem;
+
     opacity: 0;
-    pointer-events: none;
+    background: var(--bg-color);
     transition: opacity 0.4s ease-in-out;
-    z-index: 100;
 }
 
 .toast-base.active {
@@ -351,24 +356,24 @@ body {
     z-index: 200;
 }
 #ascend-toast {
-    border: 2px solid var(--toast-blue);
+    border: .125rem solid var(--toast-blue);
 }
 #freehire-toast {
-    border: 2px solid var(--status-green);
+    border: .125rem solid var(--status-green);
 }
 
 #missing-toast {
-    padding-top: 12px;
     overflow: hidden;
+    padding-top: .75rem;
     justify-content: flex-start;
-    border: 2px solid var(--accent-color);
+    border: .125rem solid var(--accent-color);
 }
 
 .missing-header {
     width: 100%;
     display: flex;
-    padding: 0 4px;
-    margin-bottom: 8px;
+    padding: 0 .25rem;
+    margin-bottom: .5rem;
     align-items: baseline;
     justify-content: space-between;
 }
@@ -389,10 +394,10 @@ body {
 
 .scroll-container {
     width: 100%;
-    height: 240px;
+    height: 15rem;
     overflow: hidden;
     position: relative;
-    border-radius: 4px;
+    border-radius: .25rem;
     background: rgba(255, 255, 255, 0.05);
 }
 
@@ -413,51 +418,54 @@ body {
 }
 
 .scroll-item {
-    height: 40px;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    
+    height: 2.5rem;
+    padding: 0 .3125rem;
+
+    gap: .3125rem;
     display: flex;
     align-items: center;
-    padding: 0 5px;
-    gap: 5px;
+    
     font-weight: bold;
     font-size: 0.75rem;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
-    white-space: nowrap;
-    overflow: hidden;
-    box-sizing: border-box;
+    border-bottom: .0625rem solid rgba(255,255,255,0.03);
 }
 
 .mini-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
+    width: 1.5rem;
+    height: 1.5rem;
     flex-shrink: 0;
+    object-fit: contain;
 }
 
 /* Confetti & Success */
 .confetti-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
     top: 0;
     left: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+    position: absolute;
     pointer-events: none;
 }
 
 .confetti {
+    width: .5rem;
+    height: .5rem;
+    top: -.625rem;
     position: absolute;
-    width: 8px;
-    height: 8px;
-    top: -10px;
     animation: confettiFall 3s linear forwards;
 }
 
 .success-msg {
-    color: var(--status-green);
-    font-size: 1.4rem;
     font-weight: 900;
-    text-transform: uppercase;
+    font-size: 1.4rem;
     text-align: center;
+    text-transform: uppercase;
+    color: var(--status-green);
     animation: winPulse 0.8s ease-in-out infinite;
 }
 
